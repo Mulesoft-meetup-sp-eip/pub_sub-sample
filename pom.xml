@@ -54,6 +54,19 @@
             <version>1.7.0</version>
             <classifier>mule-plugin</classifier>
         </dependency>
+    	<dependency>
+            <groupId>44285fea-d398-4b00-9384-02ff82bc90bf</groupId>
+            <artifactId>pub_sub-api</artifactId>
+            <version>1.0.0</version>
+            <classifier>raml</classifier>
+            <type>zip</type>
+        </dependency>
+    	<dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-apikit-module</artifactId>
+            <version>1.4.1</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
     </dependencies>
 
 	<repositories>

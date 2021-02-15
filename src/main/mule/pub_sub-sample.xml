@@ -1,5 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd"></mule>
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="publish-personSub_Flow" doc:id="d72926f2-bebc-48fd-8ad9-009cc3e92c45" >
+		<logger level="INFO" doc:name="Logger" doc:id="29cc4d59-7af0-4b21-8578-cd87cd148fd4" message='#[%dw 2.0
+output application/json
+---
+{
+	message: "Publishing a person called [" ++ payload."first-name" ++ "] at " ++ (now() &gt;&gt; "America/Sao_Paulo")
+}]'/>
+		<amqp:publish doc:name="Publish" doc:id="75eb01be-a855-4ff6-a230-f2bdaa8f4462" config-ref="AMQP_Config" exchangeName="${amqp.publisher1.exchange}">
+			<amqp:routing-keys />
+			<amqp:message >
+				<amqp:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+vars.person]]]></amqp:body>
+			</amqp:message>
+		</amqp:publish>
+	</sub-flow>
+	<flow name="pub_sub-sampleFlow1" doc:id="c00e896c-f9be-4c4d-b757-2065f536d9c3" >
+		<amqp:listener doc:name="Listener" doc:id="2ffc6d8d-115b-4211-a0a0-31515fd761fa" config-ref="AMQP_Config" queueName="${amqp.listener1.queue}">
+		</amqp:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="3fd14521-786e-4088-a606-1c7e7705c95f" message='#[%dw 2.0
+output application/json
+---
+{
+	message: "Listener 1 Received a person called [" ++ payload."first-name" ++ "] at " ++ (now() &gt;&gt; "America/Sao_Paulo")
+}]'/>
+	</flow>
+	<flow name="pub_sub-sampleFlow2" doc:id="a6c5a945-cc70-4516-b8c4-5e5b627014c2" >
+		<amqp:listener doc:name="Listener" doc:id="8bfe887b-e6da-435b-bbba-c4f3b3329fa1" config-ref="AMQP_Config" queueName="${amqp.listener2.queue}">
+		</amqp:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="d296745b-16dc-41c8-aea0-57620cc77137" message='#[%dw 2.0
+output application/json
+---
+{
+	message: "Listener 2 Received a person called [" ++ payload."first-name" ++ "] at " ++ (now() &gt;&gt; "America/Sao_Paulo")
+}]'/>
+	</flow>
+</mule>
