@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd">
+	<sub-flow name="publisher_amq-Sub_Flow" doc:id="cfa546cb-d387-4fa3-88c4-de94f90ac937" >
+		<logger level="INFO" doc:name="Log PERSON being Published" doc:id="43568f21-73ad-4ee3-8bfd-ba73ba127b57" message='#["Person named " ++ (vars.person."first-name" default "NONAME") ++ " received through HTTP request."]'/>
+		<anypoint-mq:publish doc:id="f2bce2ae-6418-4426-ac39-a65a3baa3bd3" config-ref="Anypoint_MQ_Config" destination="${amq.publisher1.exchange}" doc:name="Publish eip-pubsub"/>
+	</sub-flow>
+	<flow name="listener1_amq-Flow" doc:id="5d1d4270-4c1a-462e-a9ac-bdb376490e6b" >
+		<anypoint-mq:subscriber doc:name="Subscriber 1" doc:id="9cbbc58c-047a-4bd4-9bd5-4b057fa62aef" config-ref="Anypoint_MQ_Config" destination="${amq.listener1.queue}"/>
+		<logger level="INFO" doc:name="Log Listener 1 Receive Person" doc:id="758bf049-3f59-4151-aec6-c6f185f78404" message='#[%dw 2.0
+output application/json
+---
+{
+	message: "Listener 1 Received a person called [" ++ payload."first-name" ++ "] at " ++ (now() &gt;&gt; "America/Sao_Paulo")
+}]'/>
+	</flow>
+	<flow name="listener2_amq-Flow" doc:id="6ae6af27-b5e6-4157-92e1-a533ffab156d" >
+		<anypoint-mq:subscriber doc:name="Subscriber 2" doc:id="f30c1cfa-ab54-4f81-aa47-7bfe8055f8a3" config-ref="Anypoint_MQ_Config" destination="${amq.listener2.queue}"/>
+		<logger level="INFO" doc:name="Log Listener 2 Receive Person" doc:id="dbfb45d8-f85a-4684-b4c8-2c3628b234c2" message='#[%dw 2.0
+output application/json
+---
+{
+	message: "Listener 2 Received a person called [" ++ payload."first-name" ++ "] at " ++ (now() &gt;&gt; "America/Sao_Paulo")
+}]'/>
+	</flow>
+</mule>
