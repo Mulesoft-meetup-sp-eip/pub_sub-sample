@@ -6,7 +6,15 @@
 http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
 http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd">
 	<sub-flow name="publisher_amq-Sub_Flow" doc:id="cfa546cb-d387-4fa3-88c4-de94f90ac937" >
-		<logger level="INFO" doc:name="Log PERSON being Published" doc:id="43568f21-73ad-4ee3-8bfd-ba73ba127b57" message='#["Person named " ++ (vars.person."first-name" default "NONAME") ++ " received through HTTP request."]'/>
+		<logger level="INFO" doc:name="Log PERSON being Published" doc:id="43568f21-73ad-4ee3-8bfd-ba73ba127b57" message='#[%dw 2.0
+output application/json
+---
+{
+	target: "AMQ",
+	message: "Person named " 
+		++ (vars.person."first-name" default "NONAME") 
+		++ " received through HTTP request."
+}]'/>
 		<anypoint-mq:publish doc:id="f2bce2ae-6418-4426-ac39-a65a3baa3bd3" config-ref="Anypoint_MQ_Config" destination="${amq.publisher1.exchange}" doc:name="Publish eip-pubsub"/>
 	</sub-flow>
 	<flow name="listener1_amq-Flow" doc:id="5d1d4270-4c1a-462e-a9ac-bdb376490e6b" >
@@ -15,7 +23,11 @@ http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amq
 output application/json
 ---
 {
-	message: "Listener 1 Received a person called [" ++ payload."first-name" ++ "] at " ++ (now() &gt;&gt; "America/Sao_Paulo")
+	source: "AMQ 1",
+	message: "Received a person called [" 
+		++ payload."first-name" 
+		++ "] at " 
+		++ (now() &gt;&gt; "America/Sao_Paulo")
 }]'/>
 	</flow>
 	<flow name="listener2_amq-Flow" doc:id="6ae6af27-b5e6-4157-92e1-a533ffab156d" >
@@ -24,7 +36,11 @@ output application/json
 output application/json
 ---
 {
-	message: "Listener 2 Received a person called [" ++ payload."first-name" ++ "] at " ++ (now() &gt;&gt; "America/Sao_Paulo")
+	source: "AMQ 2",
+	message: "Received a person called [" 
+		++ payload."first-name" 
+		++ "] at " 
+		++ (now() &gt;&gt; "America/Sao_Paulo")
 }]'/>
 	</flow>
 </mule>
