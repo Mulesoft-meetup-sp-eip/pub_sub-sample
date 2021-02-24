@@ -6,15 +6,7 @@
 http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<sub-flow name="publisher_rmq-Sub_Flow" doc:id="d72926f2-bebc-48fd-8ad9-009cc3e92c45" >
-		<logger level="INFO" doc:name="Log PERSON being Published" doc:id="29cc4d59-7af0-4b21-8578-cd87cd148fd4" message='#[%dw 2.0
-output application/json
----
-{
-	target: "RMQ",
-	message: "Person named " 
-		++ (vars.person."first-name" default "NONAME") 
-		++ " received through HTTP request."
-}]'/>
+		<logger level="INFO" doc:name="Log PERSON being Published" doc:id="29cc4d59-7af0-4b21-8578-cd87cd148fd4" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	source: "HTTP",&#10;	message: "Person named " &#10;		++ (vars.person."first-name" default "NONAME") &#10;		++ " received through HTTP request.",&#10;	target: "RMQ"&#10;}]'/>
 		<amqp:publish doc:name="Publish eip-pub_sub" doc:id="75eb01be-a855-4ff6-a230-f2bdaa8f4462" config-ref="AMQP_Config" exchangeName="${amqp.publisher1.exchange}">
 			<amqp:routing-keys />
 			<amqp:message >
@@ -28,29 +20,11 @@ vars.person]]]></amqp:body>
 	<flow name="listener1_rmq-Flow" doc:id="c00e896c-f9be-4c4d-b757-2065f536d9c3" >
 		<amqp:listener doc:name="Listener 1" doc:id="2ffc6d8d-115b-4211-a0a0-31515fd761fa" config-ref="AMQP_Config" queueName="${amqp.listener1.queue}">
 		</amqp:listener>
-		<logger level="INFO" doc:name="Log Listener 1 Receive Person" doc:id="3fd14521-786e-4088-a606-1c7e7705c95f" message='#[%dw 2.0
-output application/json
----
-{
-	source: "RMQ 1",
-	message: "Received a person called [" 
-		++ payload."first-name" 
-		++ "] at " 
-		++ (now() &gt;&gt; "America/Sao_Paulo")
-}]'/>
+		<logger level="INFO" doc:name="Log Listener 1 Receive Person" doc:id="3fd14521-786e-4088-a606-1c7e7705c95f" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	source: "RMQ 1",&#10;	message: "Received a person called [" &#10;		++ payload."first-name" &#10;		++ "] at " &#10;		++ (now() &gt;&gt; "America/Sao_Paulo"),&#10;	target: "Backend 1"&#10;}]'/>
 	</flow>
 	<flow name="listener2_rmq-Flow" doc:id="a6c5a945-cc70-4516-b8c4-5e5b627014c2" >
 		<amqp:listener doc:name="Listener 2" doc:id="8bfe887b-e6da-435b-bbba-c4f3b3329fa1" config-ref="AMQP_Config" queueName="${amqp.listener2.queue}">
 		</amqp:listener>
-		<logger level="INFO" doc:name="Log Listener 2 Receive Person" doc:id="d296745b-16dc-41c8-aea0-57620cc77137" message='#[%dw 2.0
-output application/json
----
-{
-	source: "RMQ 2",
-	message: "Received a person called [" 
-	++ payload."first-name" 
-	++ "] at " 
-	++ (now() &gt;&gt; "America/Sao_Paulo")
-}]'/>
+		<logger level="INFO" doc:name="Log Listener 2 Receive Person" doc:id="d296745b-16dc-41c8-aea0-57620cc77137" message='#[%dw 2.0&#10;output application/json&#10;---&#10;{&#10;	source: "RMQ 2",&#10;	message: "Received a person called [" &#10;	++ payload."first-name" &#10;	++ "] at " &#10;	++ (now() &gt;&gt; "America/Sao_Paulo"),&#10;	target: "Backend 2"&#10;}]'/>
 	</flow>
 </mule>
