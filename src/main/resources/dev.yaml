@@ -1,9 +1,9 @@
 amqp:
   host: "shrimp.rmq.cloudamqp.com"
   port: "5672"
-  virtualHost: "***REMOVED***"
-  username: "***REMOVED***"
-  password: "***REMOVED***"
+  virtualHost: "[VIRTUAL HOST HERE]"
+  username: "[USERNAME HERE]"
+  password: "[PASSWORD HERE]"
   heartbeatTimeout: "60"
   publisher1:
     exchange: eip-pub_sub
@@ -14,8 +14,8 @@ amqp:
     
 amq:
   url: "https://mq-us-east-1.anypoint.mulesoft.com/api/v1"
-  client_id: "***REMOVED***"
-  client_secret: "***REMOVED***"
+  client_id: "[CLIENT ID HERE]"
+  client_secret: "[CLIENT SECRET HERE]"
   publisher1:
     exchange: eip-pubsub
   listener1:
@@ -29,4 +29,4 @@ http:
     port: "8081"
     
 api:
-  id: "***REMOVED***"
+  id: "[API ID HERE]"
